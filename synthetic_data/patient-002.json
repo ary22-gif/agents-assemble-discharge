@@ -1,0 +1,264 @@
+{
+  "resourceType": "Bundle",
+  "id": "bundle-patient-002",
+  "meta": {"lastUpdated": "2026-05-08T00:00:00Z"},
+  "type": "collection",
+  "entry": [
+    {
+      "fullUrl": "Patient/patient-002",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "patient-002",
+        "meta": {"versionId": "1"},
+        "text": {"status": "generated", "div": "<div>Padmé Amidala</div>"},
+        "identifier": [{"use": "usual", "system": "http://example.org/demo/mrn", "value": "DEMO-002"}],
+        "active": true,
+        "name": [{"use": "official", "family": "Amidala", "given": ["Padmé"]}],
+        "gender": "female",
+        "birthDate": "1964-01-23",
+        "address": [{"line": ["500 Naboo Palace Road"], "city": "Theed", "state": "CA", "postalCode": "90002"}],
+        "telecom": [{"system": "phone", "value": "555-000-0002", "use": "home"}],
+        "communication": [{"language": {"coding": [{"system": "urn:ietf:bcp:47", "code": "en"}]}, "preferred": true}]
+      }
+    },
+    {
+      "fullUrl": "Condition/cond-002-oa",
+      "resource": {
+        "resourceType": "Condition",
+        "id": "cond-002-oa",
+        "clinicalStatus": {"coding": [{"system": "http://terminology.hl7.org/CodeSystem/condition-clinical", "code": "active"}]},
+        "verificationStatus": {"coding": [{"system": "http://terminology.hl7.org/CodeSystem/condition-ver-status", "code": "confirmed"}]},
+        "category": [{"coding": [{"system": "http://terminology.hl7.org/CodeSystem/condition-category", "code": "encounter-diagnosis"}]}],
+        "code": {
+          "coding": [{"system": "http://hl7.org/fhir/sid/icd-10-cm", "code": "M17.11", "display": "Primary osteoarthritis, right knee"}],
+          "text": "Primary osteoarthritis, right knee"
+        },
+        "subject": {"reference": "Patient/patient-002"},
+        "onsetDateTime": "2021-04-10",
+        "recordedDate": "2026-05-06"
+      }
+    },
+    {
+      "fullUrl": "Condition/cond-002-tkr-status",
+      "resource": {
+        "resourceType": "Condition",
+        "id": "cond-002-tkr-status",
+        "clinicalStatus": {"coding": [{"system": "http://terminology.hl7.org/CodeSystem/condition-clinical", "code": "active"}]},
+        "verificationStatus": {"coding": [{"system": "http://terminology.hl7.org/CodeSystem/condition-ver-status", "code": "confirmed"}]},
+        "code": {
+          "coding": [{"system": "http://hl7.org/fhir/sid/icd-10-cm", "code": "Z96.641", "display": "Presence of right artificial knee joint"}],
+          "text": "Status post right total knee arthroplasty"
+        },
+        "subject": {"reference": "Patient/patient-002"},
+        "onsetDateTime": "2026-05-05",
+        "recordedDate": "2026-05-06"
+      }
+    },
+    {
+      "fullUrl": "Condition/cond-002-anticoag",
+      "resource": {
+        "resourceType": "Condition",
+        "id": "cond-002-anticoag",
+        "clinicalStatus": {"coding": [{"system": "http://terminology.hl7.org/CodeSystem/condition-clinical", "code": "active"}]},
+        "verificationStatus": {"coding": [{"system": "http://terminology.hl7.org/CodeSystem/condition-ver-status", "code": "confirmed"}]},
+        "code": {
+          "coding": [{"system": "http://hl7.org/fhir/sid/icd-10-cm", "code": "Z79.01", "display": "Long-term (current) use of anticoagulants"}],
+          "text": "Long-term anticoagulant use — DVT prophylaxis post-TKR"
+        },
+        "subject": {"reference": "Patient/patient-002"},
+        "onsetDateTime": "2026-05-05",
+        "recordedDate": "2026-05-06"
+      }
+    },
+    {
+      "fullUrl": "MedicationRequest/medrx-002-apixaban",
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "medrx-002-apixaban",
+        "status": "active",
+        "intent": "order",
+        "medicationCodeableConcept": {
+          "coding": [{"system": "http://www.nlm.nih.gov/research/umls/rxnorm", "code": "1599543", "display": "Apixaban 5 MG Oral Tablet"}],
+          "text": "Apixaban (Eliquis) 5 mg tablet"
+        },
+        "subject": {"reference": "Patient/patient-002"},
+        "authoredOn": "2026-05-06",
+        "requester": {"display": "Dr. Obi-Wan Kenobi, MD (Orthopedic Surgery)"},
+        "dosageInstruction": [{"text": "Take 1 tablet by mouth twice daily for 35 days (DVT prophylaxis). Do not stop without physician guidance.", "timing": {"repeat": {"frequency": 2, "period": 1, "periodUnit": "d"}}}],
+        "dispenseRequest": {"quantity": {"value": 70, "unit": "tablet"}},
+        "note": [{"text": "DVT prophylaxis post-TKR. Duration: 35 days. Avoid NSAIDs and aspirin while on apixaban."}]
+      }
+    },
+    {
+      "fullUrl": "MedicationRequest/medrx-002-oxycodone-apap",
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "medrx-002-oxycodone-apap",
+        "status": "active",
+        "intent": "order",
+        "medicationCodeableConcept": {
+          "coding": [{"system": "http://www.nlm.nih.gov/research/umls/rxnorm", "code": "1049221", "display": "Oxycodone Hydrochloride 5 MG / Acetaminophen 325 MG Oral Tablet"}],
+          "text": "Oxycodone 5mg/Acetaminophen 325mg (Percocet) tablet"
+        },
+        "subject": {"reference": "Patient/patient-002"},
+        "authoredOn": "2026-05-06",
+        "requester": {"display": "Dr. Obi-Wan Kenobi, MD (Orthopedic Surgery)"},
+        "dosageInstruction": [{"text": "Take 1-2 tablets by mouth every 4-6 hours as needed for moderate-to-severe pain. Max 8 tablets/day. Do not exceed 3000mg acetaminophen/day from all sources.", "timing": {"repeat": {"frequency": 1, "period": 4, "periodUnit": "h", "boundsDuration": {"value": 7, "unit": "d"}}}}],
+        "dispenseRequest": {"quantity": {"value": 40, "unit": "tablet"}},
+        "note": [{"text": "Short-term acute pain control post-TKR. Taper to acetaminophen alone by day 5-7. Do not combine with alcohol."}]
+      }
+    },
+    {
+      "fullUrl": "MedicationRequest/medrx-002-acetaminophen",
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "medrx-002-acetaminophen",
+        "status": "active",
+        "intent": "order",
+        "medicationCodeableConcept": {
+          "coding": [{"system": "http://www.nlm.nih.gov/research/umls/rxnorm", "code": "198440", "display": "Acetaminophen 500 MG Oral Tablet"}],
+          "text": "Acetaminophen (Tylenol) 500 mg tablet"
+        },
+        "subject": {"reference": "Patient/patient-002"},
+        "authoredOn": "2026-05-06",
+        "requester": {"display": "Dr. Obi-Wan Kenobi, MD (Orthopedic Surgery)"},
+        "dosageInstruction": [{"text": "Take 2 tablets by mouth every 6 hours around the clock for first 48 hours, then as needed for mild pain. Max 3000mg/day.", "timing": {"repeat": {"frequency": 4, "period": 1, "periodUnit": "d"}}}],
+        "dispenseRequest": {"quantity": {"value": 60, "unit": "tablet"}}
+      }
+    },
+    {
+      "fullUrl": "MedicationRequest/medrx-002-ondansetron",
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "medrx-002-ondansetron",
+        "status": "active",
+        "intent": "order",
+        "medicationCodeableConcept": {
+          "coding": [{"system": "http://www.nlm.nih.gov/research/umls/rxnorm", "code": "312086", "display": "Ondansetron 4 MG Disintegrating Oral Tablet"}],
+          "text": "Ondansetron (Zofran) 4 mg ODT"
+        },
+        "subject": {"reference": "Patient/patient-002"},
+        "authoredOn": "2026-05-06",
+        "requester": {"display": "Dr. Obi-Wan Kenobi, MD (Orthopedic Surgery)"},
+        "dosageInstruction": [{"text": "Dissolve 1 tablet on tongue every 6 hours as needed for nausea. May be related to opioid use.", "timing": {"repeat": {"frequency": 1, "period": 6, "periodUnit": "h"}}}],
+        "dispenseRequest": {"quantity": {"value": 12, "unit": "tablet"}}
+      }
+    },
+    {
+      "fullUrl": "MedicationStatement/medstmt-002-ibuprofen",
+      "resource": {
+        "resourceType": "MedicationStatement",
+        "id": "medstmt-002-ibuprofen",
+        "status": "stopped",
+        "medicationCodeableConcept": {
+          "coding": [{"system": "http://www.nlm.nih.gov/research/umls/rxnorm", "code": "197805", "display": "Ibuprofen 400 MG Oral Tablet"}],
+          "text": "Ibuprofen 400 mg (home NSAID — held pre-op, now contraindicated)"
+        },
+        "subject": {"reference": "Patient/patient-002"},
+        "dateAsserted": "2026-05-06",
+        "note": [{"text": "Patient was taking ibuprofen 400mg TID at home for knee pain. HELD 7 days pre-operatively. CONTRAINDICATED while on apixaban — do not restart until anticoagulation course complete and cleared by orthopedics."}]
+      }
+    },
+    {
+      "fullUrl": "MedicationStatement/medstmt-002-calcium",
+      "resource": {
+        "resourceType": "MedicationStatement",
+        "id": "medstmt-002-calcium",
+        "status": "active",
+        "medicationCodeableConcept": {
+          "coding": [{"system": "http://www.nlm.nih.gov/research/umls/rxnorm", "code": "1544880", "display": "Calcium Carbonate 500 MG / Cholecalciferol 200 UNT Oral Tablet"}],
+          "text": "Calcium with Vitamin D3 (OTC home medication — continue)"
+        },
+        "subject": {"reference": "Patient/patient-002"},
+        "dateAsserted": "2026-05-06"
+      }
+    },
+    {
+      "fullUrl": "CarePlan/cp-002-tkr",
+      "resource": {
+        "resourceType": "CarePlan",
+        "id": "cp-002-tkr",
+        "status": "active",
+        "intent": "plan",
+        "title": "Post-TKR Discharge Care Plan",
+        "description": "Recovery plan following right total knee arthroplasty with DVT prophylaxis.",
+        "subject": {"reference": "Patient/patient-002"},
+        "period": {"start": "2026-05-08"},
+        "activity": [
+          {"detail": {"kind": "ServiceRequest", "status": "in-progress", "description": "Physical therapy: knee range-of-motion exercises 3x daily. Walk with walker as instructed. Elevate leg above heart level when resting."}},
+          {"detail": {"kind": "ServiceRequest", "status": "in-progress", "description": "Ice knee 20 minutes every 2 hours for first 72 hours."}},
+          {"detail": {"kind": "ServiceRequest", "status": "in-progress", "description": "DVT prophylaxis: take apixaban exactly as prescribed for 35 days. Do not miss doses."}},
+          {"detail": {"kind": "Appointment", "status": "in-progress", "description": "Orthopedic surgery follow-up at 2 weeks — NOT YET SCHEDULED."}},
+          {"detail": {"kind": "Appointment", "status": "in-progress", "description": "Physical therapy outpatient referral — NOT YET SCHEDULED."}}
+        ]
+      }
+    },
+    {
+      "fullUrl": "Procedure/proc-002-tkr",
+      "resource": {
+        "resourceType": "Procedure",
+        "id": "proc-002-tkr",
+        "status": "completed",
+        "code": {
+          "coding": [{"system": "http://www.ama-assn.org/go/cpt", "code": "27447", "display": "Arthroplasty, knee, condyle and plateau; medial AND lateral compartments with or without patella resurfacing"}],
+          "text": "Right total knee arthroplasty (TKR)"
+        },
+        "subject": {"reference": "Patient/patient-002"},
+        "performedDateTime": "2026-05-05",
+        "performer": [{"actor": {"display": "Dr. Obi-Wan Kenobi, MD"}}],
+        "note": [{"text": "Uncomplicated right total knee arthroplasty. Implant: cemented. EBL 200mL. No complications. Patient ambulating day of surgery with PT assistance."}]
+      }
+    },
+    {
+      "fullUrl": "Procedure/proc-002-xray",
+      "resource": {
+        "resourceType": "Procedure",
+        "id": "proc-002-xray",
+        "status": "completed",
+        "code": {
+          "coding": [{"system": "http://www.ama-assn.org/go/cpt", "code": "73562", "display": "Radiologic examination, knee; 3 views"}],
+          "text": "Post-operative right knee X-ray (3 views)"
+        },
+        "subject": {"reference": "Patient/patient-002"},
+        "performedDateTime": "2026-05-06",
+        "note": [{"text": "Post-op day 1. Implant well-seated. No periprosthetic fracture. Cement mantle intact."}]
+      }
+    },
+    {
+      "fullUrl": "ServiceRequest/sr-002-pt",
+      "resource": {
+        "resourceType": "ServiceRequest",
+        "id": "sr-002-pt",
+        "status": "active",
+        "intent": "order",
+        "priority": "urgent",
+        "code": {
+          "coding": [{"system": "http://snomed.info/sct", "code": "306226009", "display": "Referral to physiotherapy"}],
+          "text": "Outpatient physical therapy — post-TKR rehabilitation"
+        },
+        "subject": {"reference": "Patient/patient-002"},
+        "authoredOn": "2026-05-08",
+        "requester": {"display": "Dr. Obi-Wan Kenobi, MD (Orthopedic Surgery)"},
+        "note": [{"text": "Begin outpatient PT within 3 days of discharge. Goals: achieve 90° flexion by 6 weeks, full weight bearing by 2 weeks."}]
+      }
+    },
+    {
+      "fullUrl": "ServiceRequest/sr-002-ortho-fu",
+      "resource": {
+        "resourceType": "ServiceRequest",
+        "id": "sr-002-ortho-fu",
+        "status": "active",
+        "intent": "order",
+        "priority": "routine",
+        "code": {
+          "coding": [{"system": "http://snomed.info/sct", "code": "306185003", "display": "Referral to orthopedic surgery"}],
+          "text": "Orthopedic surgery follow-up at 2 weeks post-op"
+        },
+        "subject": {"reference": "Patient/patient-002"},
+        "authoredOn": "2026-05-08",
+        "requester": {"display": "Dr. Obi-Wan Kenobi, MD (Orthopedic Surgery)"},
+        "note": [{"text": "Wound check, staple removal, and functional assessment at 2-week post-op visit."}]
+      }
+    }
+  ]
+}

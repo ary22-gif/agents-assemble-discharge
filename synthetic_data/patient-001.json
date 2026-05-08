@@ -1,0 +1,280 @@
+{
+  "resourceType": "Bundle",
+  "id": "bundle-patient-001",
+  "meta": {"lastUpdated": "2026-05-08T00:00:00Z"},
+  "type": "collection",
+  "entry": [
+    {
+      "fullUrl": "Patient/patient-001",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "patient-001",
+        "meta": {"versionId": "1"},
+        "text": {"status": "generated", "div": "<div>Aragorn Strider</div>"},
+        "identifier": [{"use": "usual", "system": "http://example.org/demo/mrn", "value": "DEMO-001"}],
+        "active": true,
+        "name": [{"use": "official", "family": "Strider", "given": ["Aragorn"]}],
+        "gender": "male",
+        "birthDate": "1948-03-15",
+        "address": [{"line": ["1 Rivendell Lane"], "city": "Gondor", "state": "ME", "postalCode": "00001"}],
+        "telecom": [{"system": "phone", "value": "555-000-0001", "use": "home"}],
+        "communication": [{"language": {"coding": [{"system": "urn:ietf:bcp:47", "code": "en"}]}, "preferred": true}]
+      }
+    },
+    {
+      "fullUrl": "Condition/cond-001-chf",
+      "resource": {
+        "resourceType": "Condition",
+        "id": "cond-001-chf",
+        "clinicalStatus": {"coding": [{"system": "http://terminology.hl7.org/CodeSystem/condition-clinical", "code": "active"}]},
+        "verificationStatus": {"coding": [{"system": "http://terminology.hl7.org/CodeSystem/condition-ver-status", "code": "confirmed"}]},
+        "category": [{"coding": [{"system": "http://terminology.hl7.org/CodeSystem/condition-category", "code": "encounter-diagnosis"}]}],
+        "code": {
+          "coding": [{"system": "http://hl7.org/fhir/sid/icd-10-cm", "code": "I50.32", "display": "Chronic diastolic (congestive) heart failure"}],
+          "text": "Chronic diastolic heart failure"
+        },
+        "subject": {"reference": "Patient/patient-001"},
+        "onsetDateTime": "2022-06-10",
+        "recordedDate": "2026-05-01"
+      }
+    },
+    {
+      "fullUrl": "Condition/cond-001-dm2",
+      "resource": {
+        "resourceType": "Condition",
+        "id": "cond-001-dm2",
+        "clinicalStatus": {"coding": [{"system": "http://terminology.hl7.org/CodeSystem/condition-clinical", "code": "active"}]},
+        "verificationStatus": {"coding": [{"system": "http://terminology.hl7.org/CodeSystem/condition-ver-status", "code": "confirmed"}]},
+        "category": [{"coding": [{"system": "http://terminology.hl7.org/CodeSystem/condition-category", "code": "problem-list-item"}]}],
+        "code": {
+          "coding": [{"system": "http://hl7.org/fhir/sid/icd-10-cm", "code": "E11.9", "display": "Type 2 diabetes mellitus without complications"}],
+          "text": "Type 2 diabetes mellitus"
+        },
+        "subject": {"reference": "Patient/patient-001"},
+        "onsetDateTime": "2015-03-20",
+        "recordedDate": "2026-05-01"
+      }
+    },
+    {
+      "fullUrl": "Condition/cond-001-htn",
+      "resource": {
+        "resourceType": "Condition",
+        "id": "cond-001-htn",
+        "clinicalStatus": {"coding": [{"system": "http://terminology.hl7.org/CodeSystem/condition-clinical", "code": "active"}]},
+        "verificationStatus": {"coding": [{"system": "http://terminology.hl7.org/CodeSystem/condition-ver-status", "code": "confirmed"}]},
+        "code": {
+          "coding": [{"system": "http://hl7.org/fhir/sid/icd-10-cm", "code": "I10", "display": "Essential (primary) hypertension"}],
+          "text": "Essential hypertension"
+        },
+        "subject": {"reference": "Patient/patient-001"},
+        "onsetDateTime": "2010-01-01",
+        "recordedDate": "2026-05-01"
+      }
+    },
+    {
+      "fullUrl": "Condition/cond-001-cad",
+      "resource": {
+        "resourceType": "Condition",
+        "id": "cond-001-cad",
+        "clinicalStatus": {"coding": [{"system": "http://terminology.hl7.org/CodeSystem/condition-clinical", "code": "active"}]},
+        "verificationStatus": {"coding": [{"system": "http://terminology.hl7.org/CodeSystem/condition-ver-status", "code": "confirmed"}]},
+        "code": {
+          "coding": [{"system": "http://hl7.org/fhir/sid/icd-10-cm", "code": "I25.10", "display": "Atherosclerotic heart disease of native coronary artery without angina pectoris"}],
+          "text": "Coronary artery disease"
+        },
+        "subject": {"reference": "Patient/patient-001"},
+        "onsetDateTime": "2020-08-15",
+        "recordedDate": "2026-05-01"
+      }
+    },
+    {
+      "fullUrl": "MedicationRequest/medrx-001-furosemide",
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "medrx-001-furosemide",
+        "status": "active",
+        "intent": "order",
+        "medicationCodeableConcept": {
+          "coding": [{"system": "http://www.nlm.nih.gov/research/umls/rxnorm", "code": "313988", "display": "Furosemide 40 MG Oral Tablet"}],
+          "text": "Furosemide 40 mg tablet"
+        },
+        "subject": {"reference": "Patient/patient-001"},
+        "authoredOn": "2026-05-01",
+        "requester": {"display": "Dr. Elrond Halfelven, MD"},
+        "dosageInstruction": [{"text": "Take 1 tablet by mouth once daily in the morning", "timing": {"repeat": {"frequency": 1, "period": 1, "periodUnit": "d"}}}],
+        "dispenseRequest": {"quantity": {"value": 30, "unit": "tablet"}}
+      }
+    },
+    {
+      "fullUrl": "MedicationRequest/medrx-001-lisinopril",
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "medrx-001-lisinopril",
+        "status": "active",
+        "intent": "order",
+        "medicationCodeableConcept": {
+          "coding": [{"system": "http://www.nlm.nih.gov/research/umls/rxnorm", "code": "314077", "display": "Lisinopril 10 MG Oral Tablet"}],
+          "text": "Lisinopril 10 mg tablet"
+        },
+        "subject": {"reference": "Patient/patient-001"},
+        "authoredOn": "2026-05-01",
+        "requester": {"display": "Dr. Elrond Halfelven, MD"},
+        "dosageInstruction": [{"text": "Take 1 tablet by mouth once daily", "timing": {"repeat": {"frequency": 1, "period": 1, "periodUnit": "d"}}}],
+        "dispenseRequest": {"quantity": {"value": 30, "unit": "tablet"}}
+      }
+    },
+    {
+      "fullUrl": "MedicationRequest/medrx-001-carvedilol",
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "medrx-001-carvedilol",
+        "status": "active",
+        "intent": "order",
+        "medicationCodeableConcept": {
+          "coding": [{"system": "http://www.nlm.nih.gov/research/umls/rxnorm", "code": "200033", "display": "Carvedilol 12.5 MG Oral Tablet"}],
+          "text": "Carvedilol 12.5 mg tablet"
+        },
+        "subject": {"reference": "Patient/patient-001"},
+        "authoredOn": "2026-05-01",
+        "requester": {"display": "Dr. Elrond Halfelven, MD"},
+        "dosageInstruction": [{"text": "Take 1 tablet by mouth twice daily with food", "timing": {"repeat": {"frequency": 2, "period": 1, "periodUnit": "d"}}}],
+        "dispenseRequest": {"quantity": {"value": 60, "unit": "tablet"}}
+      }
+    },
+    {
+      "fullUrl": "MedicationRequest/medrx-001-metformin",
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "medrx-001-metformin",
+        "status": "active",
+        "intent": "order",
+        "medicationCodeableConcept": {
+          "coding": [{"system": "http://www.nlm.nih.gov/research/umls/rxnorm", "code": "861007", "display": "Metformin hydrochloride 1000 MG Oral Tablet"}],
+          "text": "Metformin 1000 mg tablet"
+        },
+        "subject": {"reference": "Patient/patient-001"},
+        "authoredOn": "2026-05-01",
+        "requester": {"display": "Dr. Elrond Halfelven, MD"},
+        "dosageInstruction": [{"text": "Take 1 tablet by mouth twice daily with meals", "timing": {"repeat": {"frequency": 2, "period": 1, "periodUnit": "d"}}}],
+        "dispenseRequest": {"quantity": {"value": 60, "unit": "tablet"}}
+      }
+    },
+    {
+      "fullUrl": "MedicationRequest/medrx-001-aspirin",
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "medrx-001-aspirin",
+        "status": "active",
+        "intent": "order",
+        "medicationCodeableConcept": {
+          "coding": [{"system": "http://www.nlm.nih.gov/research/umls/rxnorm", "code": "243670", "display": "Aspirin 81 MG Oral Tablet"}],
+          "text": "Aspirin 81 mg tablet"
+        },
+        "subject": {"reference": "Patient/patient-001"},
+        "authoredOn": "2026-05-01",
+        "requester": {"display": "Dr. Elrond Halfelven, MD"},
+        "dosageInstruction": [{"text": "Take 1 tablet by mouth once daily", "timing": {"repeat": {"frequency": 1, "period": 1, "periodUnit": "d"}}}],
+        "dispenseRequest": {"quantity": {"value": 30, "unit": "tablet"}}
+      }
+    },
+    {
+      "fullUrl": "MedicationStatement/medstmt-001-spiro",
+      "resource": {
+        "resourceType": "MedicationStatement",
+        "id": "medstmt-001-spiro",
+        "status": "stopped",
+        "medicationCodeableConcept": {
+          "coding": [{"system": "http://www.nlm.nih.gov/research/umls/rxnorm", "code": "313096", "display": "Spironolactone 25 MG Oral Tablet"}],
+          "text": "Spironolactone 25 mg tablet (home med — discontinued)"
+        },
+        "subject": {"reference": "Patient/patient-001"},
+        "dateAsserted": "2026-05-01",
+        "note": [{"text": "Patient was taking at home; held due to hyperkalemia risk with lisinopril combination; reassess at cardiology follow-up."}]
+      }
+    },
+    {
+      "fullUrl": "CarePlan/cp-001-chf",
+      "resource": {
+        "resourceType": "CarePlan",
+        "id": "cp-001-chf",
+        "status": "active",
+        "intent": "plan",
+        "title": "CHF Discharge Care Plan",
+        "description": "Post-hospitalization management of chronic diastolic heart failure with diabetes comorbidity.",
+        "subject": {"reference": "Patient/patient-001"},
+        "period": {"start": "2026-05-08"},
+        "activity": [
+          {"detail": {"kind": "NutritionOrder", "status": "in-progress", "description": "Restrict sodium to less than 2g per day. Restrict fluids to 1.5L per day."}},
+          {"detail": {"kind": "ServiceRequest", "status": "in-progress", "description": "Weigh yourself every morning before eating. Call doctor if weight increases more than 2 pounds in one day or 5 pounds in one week."}},
+          {"detail": {"kind": "ServiceRequest", "status": "in-progress", "description": "Monitor blood glucose twice daily. Target fasting glucose 80-130 mg/dL."}},
+          {"detail": {"kind": "Appointment", "status": "in-progress", "description": "Cardiology follow-up within 7 days of discharge — NOT YET SCHEDULED."}}
+        ]
+      }
+    },
+    {
+      "fullUrl": "Procedure/proc-001-echo",
+      "resource": {
+        "resourceType": "Procedure",
+        "id": "proc-001-echo",
+        "status": "completed",
+        "code": {
+          "coding": [{"system": "http://www.ama-assn.org/go/cpt", "code": "93306", "display": "Echocardiography, transthoracic, real-time with image documentation"}],
+          "text": "Transthoracic echocardiogram"
+        },
+        "subject": {"reference": "Patient/patient-001"},
+        "performedDateTime": "2026-05-03",
+        "note": [{"text": "LVEF 40%. Grade II diastolic dysfunction. Mild mitral regurgitation."}]
+      }
+    },
+    {
+      "fullUrl": "Procedure/proc-001-bnp",
+      "resource": {
+        "resourceType": "Procedure",
+        "id": "proc-001-bnp",
+        "status": "completed",
+        "code": {
+          "coding": [{"system": "http://loinc.org", "code": "42637-9", "display": "Natriuretic peptide B [Units/volume] in Serum or Plasma"}],
+          "text": "BNP (B-type natriuretic peptide)"
+        },
+        "subject": {"reference": "Patient/patient-001"},
+        "performedDateTime": "2026-05-01",
+        "note": [{"text": "BNP 980 pg/mL on admission; 320 pg/mL on discharge (trend improved)."}]
+      }
+    },
+    {
+      "fullUrl": "ServiceRequest/sr-001-cardio",
+      "resource": {
+        "resourceType": "ServiceRequest",
+        "id": "sr-001-cardio",
+        "status": "active",
+        "intent": "order",
+        "priority": "urgent",
+        "code": {
+          "coding": [{"system": "http://snomed.info/sct", "code": "306206005", "display": "Referral to cardiology"}],
+          "text": "Cardiology outpatient follow-up within 7 days"
+        },
+        "subject": {"reference": "Patient/patient-001"},
+        "authoredOn": "2026-05-08",
+        "requester": {"display": "Dr. Elrond Halfelven, MD"},
+        "note": [{"text": "Post-CHF hospitalization. LVEF 40%. Needs medication titration and repeat echo in 3 months."}]
+      }
+    },
+    {
+      "fullUrl": "ServiceRequest/sr-001-diet",
+      "resource": {
+        "resourceType": "ServiceRequest",
+        "id": "sr-001-diet",
+        "status": "active",
+        "intent": "order",
+        "priority": "routine",
+        "code": {
+          "coding": [{"system": "http://snomed.info/sct", "code": "306170007", "display": "Referral to dietitian"}],
+          "text": "Dietitian consultation — cardiac diet and diabetic meal planning"
+        },
+        "subject": {"reference": "Patient/patient-001"},
+        "authoredOn": "2026-05-08",
+        "requester": {"display": "Dr. Elrond Halfelven, MD"}
+      }
+    }
+  ]
+}

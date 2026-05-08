@@ -1,0 +1,234 @@
+{
+  "resourceType": "Bundle",
+  "id": "bundle-patient-003",
+  "meta": {"lastUpdated": "2026-05-08T00:00:00Z"},
+  "type": "collection",
+  "entry": [
+    {
+      "fullUrl": "Patient/patient-003",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "patient-003",
+        "meta": {"versionId": "1"},
+        "text": {"status": "generated", "div": "<div>Bilbo Baggins</div>"},
+        "identifier": [{"use": "usual", "system": "http://example.org/demo/mrn", "value": "DEMO-003"}],
+        "active": true,
+        "name": [{"use": "official", "family": "Baggins", "given": ["Bilbo"]}],
+        "gender": "male",
+        "birthDate": "1981-07-04",
+        "address": [{"line": ["1 Bag End", "Bagshot Row"], "city": "Hobbiton", "state": "NZ", "postalCode": "00003"}],
+        "telecom": [{"system": "phone", "value": "555-000-0003", "use": "home"}],
+        "communication": [{"language": {"coding": [{"system": "urn:ietf:bcp:47", "code": "en"}]}, "preferred": true}]
+      }
+    },
+    {
+      "fullUrl": "Condition/cond-003-pneumonia",
+      "resource": {
+        "resourceType": "Condition",
+        "id": "cond-003-pneumonia",
+        "clinicalStatus": {"coding": [{"system": "http://terminology.hl7.org/CodeSystem/condition-clinical", "code": "active"}]},
+        "verificationStatus": {"coding": [{"system": "http://terminology.hl7.org/CodeSystem/condition-ver-status", "code": "confirmed"}]},
+        "category": [{"coding": [{"system": "http://terminology.hl7.org/CodeSystem/condition-category", "code": "encounter-diagnosis"}]}],
+        "code": {
+          "coding": [{"system": "http://hl7.org/fhir/sid/icd-10-cm", "code": "J18.9", "display": "Pneumonia, unspecified organism"}],
+          "text": "Community-acquired pneumonia (CAP)"
+        },
+        "subject": {"reference": "Patient/patient-003"},
+        "onsetDateTime": "2026-05-04",
+        "recordedDate": "2026-05-05",
+        "note": [{"text": "RLL pneumonia confirmed on CXR. Responding to azithromycin. Afebrile x24h prior to discharge."}]
+      }
+    },
+    {
+      "fullUrl": "Condition/cond-003-asthma",
+      "resource": {
+        "resourceType": "Condition",
+        "id": "cond-003-asthma",
+        "clinicalStatus": {"coding": [{"system": "http://terminology.hl7.org/CodeSystem/condition-clinical", "code": "active"}]},
+        "verificationStatus": {"coding": [{"system": "http://terminology.hl7.org/CodeSystem/condition-ver-status", "code": "confirmed"}]},
+        "category": [{"coding": [{"system": "http://terminology.hl7.org/CodeSystem/condition-category", "code": "problem-list-item"}]}],
+        "code": {
+          "coding": [{"system": "http://hl7.org/fhir/sid/icd-10-cm", "code": "J45.20", "display": "Mild intermittent asthma, uncomplicated"}],
+          "text": "Mild intermittent asthma"
+        },
+        "subject": {"reference": "Patient/patient-003"},
+        "onsetDateTime": "2005-09-01",
+        "recordedDate": "2026-05-05",
+        "note": [{"text": "Asthma likely triggered/exacerbated by pneumonia. Patient used rescue inhaler 4-6x/day during admission. Discharged with albuterol and counseled on inhaler technique."}]
+      }
+    },
+    {
+      "fullUrl": "MedicationRequest/medrx-003-azithromycin",
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "medrx-003-azithromycin",
+        "status": "active",
+        "intent": "order",
+        "medicationCodeableConcept": {
+          "coding": [{"system": "http://www.nlm.nih.gov/research/umls/rxnorm", "code": "308460", "display": "Azithromycin 250 MG Oral Tablet"}],
+          "text": "Azithromycin (Z-Pack) 250 mg tablet"
+        },
+        "subject": {"reference": "Patient/patient-003"},
+        "authoredOn": "2026-05-08",
+        "requester": {"display": "Dr. Gandalf Grey, MD (Hospitalist)"},
+        "dosageInstruction": [{"text": "Take 2 tablets (500mg) on Day 1, then 1 tablet (250mg) once daily on Days 2-5. Complete the full course.", "timing": {"repeat": {"frequency": 1, "period": 1, "periodUnit": "d", "boundsDuration": {"value": 5, "unit": "d"}}}}],
+        "dispenseRequest": {"quantity": {"value": 6, "unit": "tablet"}},
+        "note": [{"text": "Day 1-2 of 5 already completed in hospital. Dispense 4 remaining doses (Days 2-5)."}]
+      }
+    },
+    {
+      "fullUrl": "MedicationRequest/medrx-003-albuterol",
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "medrx-003-albuterol",
+        "status": "active",
+        "intent": "order",
+        "medicationCodeableConcept": {
+          "coding": [{"system": "http://www.nlm.nih.gov/research/umls/rxnorm", "code": "245314", "display": "Albuterol 0.09 MG/ACTUAT Metered Dose Inhaler"}],
+          "text": "Albuterol HFA 90 mcg/actuation inhaler (rescue inhaler)"
+        },
+        "subject": {"reference": "Patient/patient-003"},
+        "authoredOn": "2026-05-08",
+        "requester": {"display": "Dr. Gandalf Grey, MD (Hospitalist)"},
+        "dosageInstruction": [{"text": "Inhale 2 puffs every 4-6 hours as needed for shortness of breath or wheezing. Shake well before use. Rinse mouth after use.", "timing": {"repeat": {"frequency": 1, "period": 6, "periodUnit": "h"}}}],
+        "dispenseRequest": {"quantity": {"value": 1, "unit": "inhaler"}},
+        "note": [{"text": "Rescue bronchodilator. If using more than 2 days per week, contact PCP — may need step-up therapy."}]
+      }
+    },
+    {
+      "fullUrl": "MedicationRequest/medrx-003-prednisone",
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "medrx-003-prednisone",
+        "status": "active",
+        "intent": "order",
+        "medicationCodeableConcept": {
+          "coding": [{"system": "http://www.nlm.nih.gov/research/umls/rxnorm", "code": "312617", "display": "Prednisone 40 MG Oral Tablet"}],
+          "text": "Prednisone 40 mg tablet (oral corticosteroid — short course)"
+        },
+        "subject": {"reference": "Patient/patient-003"},
+        "authoredOn": "2026-05-08",
+        "requester": {"display": "Dr. Gandalf Grey, MD (Hospitalist)"},
+        "dosageInstruction": [{"text": "Take 1 tablet by mouth once daily for 5 days. Take with food. Do not stop abruptly.", "timing": {"repeat": {"frequency": 1, "period": 1, "periodUnit": "d", "boundsDuration": {"value": 5, "unit": "d"}}}}],
+        "dispenseRequest": {"quantity": {"value": 5, "unit": "tablet"}},
+        "note": [{"text": "Short course for asthma exacerbation component. Monitor blood glucose if diabetic."}]
+      }
+    },
+    {
+      "fullUrl": "MedicationStatement/medstmt-003-fluticasone-salm",
+      "resource": {
+        "resourceType": "MedicationStatement",
+        "id": "medstmt-003-fluticasone-salm",
+        "status": "active",
+        "medicationCodeableConcept": {
+          "coding": [{"system": "http://www.nlm.nih.gov/research/umls/rxnorm", "code": "896232", "display": "Fluticasone Propionate 250 MCG/ACTUAT / Salmeterol 50 MCG/ACTUAT Dry Powder Inhaler"}],
+          "text": "Fluticasone/Salmeterol (Advair Diskus) 250/50 — home controller inhaler"
+        },
+        "subject": {"reference": "Patient/patient-003"},
+        "dateAsserted": "2026-05-05",
+        "note": [{"text": "Home controller inhaler. Patient admits to using inconsistently. RESUME and use every day as prescribed — 1 puff twice daily. This is NOT a rescue inhaler."}]
+      }
+    },
+    {
+      "fullUrl": "CarePlan/cp-003-pneumonia",
+      "resource": {
+        "resourceType": "CarePlan",
+        "id": "cp-003-pneumonia",
+        "status": "active",
+        "intent": "plan",
+        "title": "CAP + Asthma Discharge Care Plan",
+        "description": "Community-acquired pneumonia recovery with asthma management.",
+        "subject": {"reference": "Patient/patient-003"},
+        "period": {"start": "2026-05-08"},
+        "activity": [
+          {"detail": {"kind": "ServiceRequest", "status": "in-progress", "description": "Complete the full azithromycin course (5 days total). Do not skip doses even if feeling better."}},
+          {"detail": {"kind": "ServiceRequest", "status": "in-progress", "description": "Use albuterol rescue inhaler as needed. Resume fluticasone/salmeterol (Advair) twice daily — do not skip."}},
+          {"detail": {"kind": "ServiceRequest", "status": "in-progress", "description": "Rest and increase fluids. Expect full recovery in 1-2 weeks. Cough may persist up to 4-6 weeks — this is normal."}},
+          {"detail": {"kind": "ServiceRequest", "status": "in-progress", "description": "Stay up to date on vaccines: annual flu shot, pneumococcal vaccine if not already received (ask PCP)."}},
+          {"detail": {"kind": "Appointment", "status": "in-progress", "description": "PCP follow-up within 14 days of discharge — NOT YET SCHEDULED. Critical to reassess asthma control step therapy."}}
+        ]
+      }
+    },
+    {
+      "fullUrl": "Procedure/proc-003-cxr",
+      "resource": {
+        "resourceType": "Procedure",
+        "id": "proc-003-cxr",
+        "status": "completed",
+        "code": {
+          "coding": [{"system": "http://www.ama-assn.org/go/cpt", "code": "71046", "display": "Radiologic examination, chest; 2 views"}],
+          "text": "Chest X-ray (2 views)"
+        },
+        "subject": {"reference": "Patient/patient-003"},
+        "performedDateTime": "2026-05-05",
+        "note": [{"text": "Right lower lobe infiltrate consistent with pneumonia. No pleural effusion. No pneumothorax."}]
+      }
+    },
+    {
+      "fullUrl": "Procedure/proc-003-sputum",
+      "resource": {
+        "resourceType": "Procedure",
+        "id": "proc-003-sputum",
+        "status": "completed",
+        "code": {
+          "coding": [{"system": "http://loinc.org", "code": "6460-0", "display": "Bacteria identified in Sputum by Culture"}],
+          "text": "Sputum culture and sensitivity"
+        },
+        "subject": {"reference": "Patient/patient-003"},
+        "performedDateTime": "2026-05-05",
+        "note": [{"text": "Sputum culture: no growth after 48 hours (atypical organism suspected — azithromycin appropriate empiric choice)."}]
+      }
+    },
+    {
+      "fullUrl": "Procedure/proc-003-spirometry",
+      "resource": {
+        "resourceType": "Procedure",
+        "id": "proc-003-spirometry",
+        "status": "completed",
+        "code": {
+          "coding": [{"system": "http://www.ama-assn.org/go/cpt", "code": "94010", "display": "Spirometry, including graphic record, total and timed vital capacity, expiratory flow rate measurement(s), with or without maximal voluntary ventilation"}],
+          "text": "Spirometry (bedside)"
+        },
+        "subject": {"reference": "Patient/patient-003"},
+        "performedDateTime": "2026-05-07",
+        "note": [{"text": "FEV1/FVC 0.74 (borderline obstructive). Consistent with mild asthma. Recommend formal PFTs at PCP follow-up."}]
+      }
+    },
+    {
+      "fullUrl": "ServiceRequest/sr-003-pcp",
+      "resource": {
+        "resourceType": "ServiceRequest",
+        "id": "sr-003-pcp",
+        "status": "active",
+        "intent": "order",
+        "priority": "routine",
+        "code": {
+          "coding": [{"system": "http://snomed.info/sct", "code": "3457005", "display": "Patient referral"}],
+          "text": "PCP follow-up within 14 days — pneumonia + asthma reassessment"
+        },
+        "subject": {"reference": "Patient/patient-003"},
+        "authoredOn": "2026-05-08",
+        "requester": {"display": "Dr. Gandalf Grey, MD (Hospitalist)"},
+        "note": [{"text": "Post-CAP follow-up. Reassess asthma step therapy — consider step-up if albuterol still needed frequently. Repeat CXR at 6-8 weeks to confirm radiographic clearance. Discuss pneumococcal vaccination status."}]
+      }
+    },
+    {
+      "fullUrl": "ServiceRequest/sr-003-pulm",
+      "resource": {
+        "resourceType": "ServiceRequest",
+        "id": "sr-003-pulm",
+        "status": "active",
+        "intent": "order",
+        "priority": "routine",
+        "code": {
+          "coding": [{"system": "http://snomed.info/sct", "code": "306252007", "display": "Referral to pulmonologist"}],
+          "text": "Pulmonology referral — formal PFTs and asthma management"
+        },
+        "subject": {"reference": "Patient/patient-003"},
+        "authoredOn": "2026-05-08",
+        "requester": {"display": "Dr. Gandalf Grey, MD (Hospitalist)"},
+        "note": [{"text": "Asthma inadequately controlled (borderline obstructive spirometry, frequent rescue inhaler use). Pulmonology to assess step therapy and formal PFTs within 4-6 weeks."}]
+      }
+    }
+  ]
+}
