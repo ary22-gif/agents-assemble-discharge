@@ -14,10 +14,10 @@ PATTERNS = [
     # SSN: 123-45-6789 or 123456789 (9 digits)
     (r"\b\d{3}-\d{2}-\d{4}\b", "SSN pattern"),
     # MRN-style: MRN followed by digits, or common prefixes
-    (r"\bMRN[-:\s]?\d{5,10}\b", "MRN pattern"),
-    (r"\bPatient[-_]?ID[-:\s]?\d{5,10}\b", "Patient ID pattern"),
+    (r"\bMRN[-:\s]+\d{5,10}\b", "MRN pattern"),
+    (r"\bPatient[-_]?ID[-:\s]+\d{5,10}\b", "Patient ID pattern"),
     # NPI (10 digits, common in healthcare)
-    (r"\bNPI[-:\s]?\d{10}\b", "NPI pattern"),
+    (r"\bNPI[-:\s]+\d{10}\b", "NPI pattern"),
     # DEA number pattern (2 letters + 7 digits)
     (r"\b[A-Z]{2}\d{7}\b", "DEA number pattern"),
 ]
