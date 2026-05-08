@@ -1,0 +1,21 @@
+repos:
+  - repo: local
+    hooks:
+      - id: phi-guard
+        name: PHI Guard — block SSN/MRN/DOB patterns
+        entry: python scripts/phi_guard.py
+        language: python
+        types: [python, json, text]
+        exclude: ^(reference/|\.venv/|synthetic_data/)
+        pass_filenames: true
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-json
+      - id: check-added-large-files
+        args: ["--maxkb=2000"]
+      - id: detect-private-key
