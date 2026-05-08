@@ -171,18 +171,20 @@ def prepare_discharge_packet(tool_context: ToolContext) -> dict:
                 MEDRECON_URL, CAREPLAN_URL, FOLLOWUP_URL)
 
     try:
-        loop = asyncio.get_event_loop()
-        if loop.is_running():
-            # Inside an async context (e.g. uvicorn) — use run_coroutine_threadsafe
-            import concurrent.futures
-            future = asyncio.run_coroutine_threadsafe(
-                _prepare_packet_async(fhir_url, fhir_token, patient_id), loop
-            )
-            return future.result(timeout=180)
-        else:
-            return loop.run_until_complete(
+        # Always run in a dedicated thread with its own event loop.
+        # This avoids "event loop already running" errors when called from uvicorn,
+        # and avoids deadlocks from run_coroutine_threadsafe (which would block the
+        # same thread that owns the running loop).
+        import concurrent.futures
+
+        def _run():
+            return asyncio.run(
                 _prepare_packet_async(fhir_url, fhir_token, patient_id)
             )
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=1) as pool:
+            future = pool.submit(_run)
+            return future.result(timeout=180)
     except Exception as e:
         logger.exception("orchestrator error: %s", e)
         return {"status": "error", "error_message": str(e)}

@@ -4,9 +4,9 @@ version = "0.1.0"
 description = "Discharge Coordinator — A2A multi-agent discharge planning system"
 requires-python = ">=3.11"
 dependencies = [
-    "google-adk>=1.0.0",
-    "a2a-sdk>=0.2.0",
-    "litellm>=1.40.0",
+    "google-adk>=1.25.0",
+    "a2a-sdk[http-server]>=0.3.26,<1.0.0",
+    "litellm==1.83.7",
     "httpx>=0.27.0",
     "fastapi>=0.111.0",
     "uvicorn[standard]>=0.30.0",
