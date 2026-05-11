@@ -1,10 +1,15 @@
 """FollowUp Agent tools — appointments, service requests, conditions from FHIR."""
+
 import logging
 import httpx
 from google.adk.tools import ToolContext
 from shared.fhir_client import (
-    _get_fhir_context, fhir_get, http_error_result,
-    connection_error_result, coding_display, extract_resource_id,
+    _get_fhir_context,
+    fhir_get,
+    http_error_result,
+    connection_error_result,
+    coding_display,
+    extract_resource_id,
 )
 
 logger = logging.getLogger(__name__)
@@ -36,8 +41,10 @@ def get_patient_info(tool_context: ToolContext) -> dict:
         return http_error_result(e)
     except Exception as e:
         return connection_error_result(e)
-    names    = p.get("name", [])
-    official = next((n for n in names if n.get("use") == "official"), names[0] if names else {})
+    names = p.get("name", [])
+    official = next(
+        (n for n in names if n.get("use") == "official"), names[0] if names else {}
+    )
     return {
         "status": "success",
         "resource_id": extract_resource_id(p),
@@ -62,8 +69,12 @@ def get_appointments(tool_context: ToolContext) -> dict:
     fhir_url, fhir_token, patient_id = ctx
     logger.info("followup_tool get_appointments patient_id=%s", patient_id)
     try:
-        bundle = fhir_get(fhir_url, fhir_token, "Appointment",
-                          params={"patient": patient_id, "_count": "50"})
+        bundle = fhir_get(
+            fhir_url,
+            fhir_token,
+            "Appointment",
+            params={"patient": patient_id, "_count": "50"},
+        )
     except httpx.HTTPStatusError as e:
         return http_error_result(e)
     except Exception as e:
@@ -73,17 +84,26 @@ def get_appointments(tool_context: ToolContext) -> dict:
     for entry in bundle.get("entry", []):
         r = entry.get("resource", {})
         service_type = r.get("serviceType", [{}])
-        appt_type    = (service_type[0].get("coding", [{}])[0].get("display")
-                        if service_type else r.get("appointmentType", {}).get("text", "Unknown"))
-        appts.append({
-            "resource_id": extract_resource_id(r),
-            "appointment_type": appt_type or "Unspecified",
-            "scheduled_date": r.get("start"),
-            "status": r.get("status"),
-            "description": r.get("description"),
-        })
-    return {"status": "success", "patient_id": patient_id,
-            "count": len(appts), "appointments": appts}
+        appt_type = (
+            service_type[0].get("coding", [{}])[0].get("display")
+            if service_type
+            else r.get("appointmentType", {}).get("text", "Unknown")
+        )
+        appts.append(
+            {
+                "resource_id": extract_resource_id(r),
+                "appointment_type": appt_type or "Unspecified",
+                "scheduled_date": r.get("start"),
+                "status": r.get("status"),
+                "description": r.get("description"),
+            }
+        )
+    return {
+        "status": "success",
+        "patient_id": patient_id,
+        "count": len(appts),
+        "appointments": appts,
+    }
 
 
 def get_service_requests(tool_context: ToolContext) -> dict:
@@ -101,8 +121,12 @@ def get_service_requests(tool_context: ToolContext) -> dict:
     fhir_url, fhir_token, patient_id = ctx
     logger.info("followup_tool get_service_requests patient_id=%s", patient_id)
     try:
-        bundle = fhir_get(fhir_url, fhir_token, "ServiceRequest",
-                          params={"patient": patient_id, "_count": "50"})
+        bundle = fhir_get(
+            fhir_url,
+            fhir_token,
+            "ServiceRequest",
+            params={"patient": patient_id, "_count": "50"},
+        )
     except httpx.HTTPStatusError as e:
         return http_error_result(e)
     except Exception as e:
@@ -110,20 +134,26 @@ def get_service_requests(tool_context: ToolContext) -> dict:
 
     requests = []
     for entry in bundle.get("entry", []):
-        r       = entry.get("resource", {})
-        code    = r.get("code", {})
+        r = entry.get("resource", {})
+        code = r.get("code", {})
         codings = code.get("coding", [])
-        requests.append({
-            "resource_id": extract_resource_id(r),
-            "service_type": code.get("text") or coding_display(codings),
-            "status": r.get("status"),
-            "priority": r.get("priority", "routine"),
-            "authored_on": r.get("authoredOn"),
-            "requester": (r.get("requester") or {}).get("display"),
-            "notes": " | ".join(n.get("text", "") for n in r.get("note", [])),
-        })
-    return {"status": "success", "patient_id": patient_id,
-            "count": len(requests), "service_requests": requests}
+        requests.append(
+            {
+                "resource_id": extract_resource_id(r),
+                "service_type": code.get("text") or coding_display(codings),
+                "status": r.get("status"),
+                "priority": r.get("priority", "routine"),
+                "authored_on": r.get("authoredOn"),
+                "requester": (r.get("requester") or {}).get("display"),
+                "notes": " | ".join(n.get("text", "") for n in r.get("note", [])),
+            }
+        )
+    return {
+        "status": "success",
+        "patient_id": patient_id,
+        "count": len(requests),
+        "service_requests": requests,
+    }
 
 
 def get_conditions(tool_context: ToolContext) -> dict:
@@ -139,8 +169,12 @@ def get_conditions(tool_context: ToolContext) -> dict:
     fhir_url, fhir_token, patient_id = ctx
     logger.info("followup_tool get_conditions patient_id=%s", patient_id)
     try:
-        bundle = fhir_get(fhir_url, fhir_token, "Condition",
-                          params={"patient": patient_id, "_count": "100"})
+        bundle = fhir_get(
+            fhir_url,
+            fhir_token,
+            "Condition",
+            params={"patient": patient_id, "_count": "100"},
+        )
     except httpx.HTTPStatusError as e:
         return http_error_result(e)
     except Exception as e:
@@ -148,20 +182,27 @@ def get_conditions(tool_context: ToolContext) -> dict:
 
     conditions = []
     for entry in bundle.get("entry", []):
-        r       = entry.get("resource", {})
-        code    = r.get("code", {})
+        r = entry.get("resource", {})
+        code = r.get("code", {})
         codings = code.get("coding", [])
-        icd10   = next((c["code"] for c in codings
-                        if "icd-10" in c.get("system", "").lower()), "")
-        prefix  = icd10[:3] if icd10 else ""
-        window  = _CONDITION_WINDOWS.get(prefix)
-        conditions.append({
-            "resource_id": extract_resource_id(r),
-            "condition_name": code.get("text") or coding_display(codings),
-            "icd10_code": icd10,
-            "recommended_followup_specialty": window[0] if window else None,
-            "recommended_followup_window": window[1] if window else None,
-            "recommended_followup_priority": window[2] if window else None,
-        })
-    return {"status": "success", "patient_id": patient_id,
-            "count": len(conditions), "conditions": conditions}
+        icd10 = next(
+            (c["code"] for c in codings if "icd-10" in c.get("system", "").lower()), ""
+        )
+        prefix = icd10[:3] if icd10 else ""
+        window = _CONDITION_WINDOWS.get(prefix)
+        conditions.append(
+            {
+                "resource_id": extract_resource_id(r),
+                "condition_name": code.get("text") or coding_display(codings),
+                "icd10_code": icd10,
+                "recommended_followup_specialty": window[0] if window else None,
+                "recommended_followup_window": window[1] if window else None,
+                "recommended_followup_priority": window[2] if window else None,
+            }
+        )
+    return {
+        "status": "success",
+        "patient_id": patient_id,
+        "count": len(conditions),
+        "conditions": conditions,
+    }

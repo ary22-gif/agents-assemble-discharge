@@ -1,5 +1,5 @@
 """Tests for the mock FHIR server — no LLM calls, pure HTTP."""
-import json
+
 import pytest
 from fastapi.testclient import TestClient
 from pathlib import Path
@@ -10,9 +10,11 @@ from fhir_server.routes import load_bundles
 SYNTHETIC_DIR = Path(__file__).parent.parent / "synthetic_data"
 TOKEN = "Bearer test-token"
 
+
 @pytest.fixture(autouse=True)
 def load_test_data():
     load_bundles(SYNTHETIC_DIR)
+
 
 @pytest.fixture
 def client():
@@ -56,7 +58,9 @@ def test_no_auth_rejected(client):
 
 
 def test_conditions_patient_001(client):
-    r = client.get("/fhir/Condition?patient=patient-001", headers={"Authorization": TOKEN})
+    r = client.get(
+        "/fhir/Condition?patient=patient-001", headers={"Authorization": TOKEN}
+    )
     assert r.status_code == 200
     data = r.json()
     assert data["resourceType"] == "Bundle"
@@ -67,7 +71,9 @@ def test_conditions_patient_001(client):
 
 
 def test_medication_requests_patient_001(client):
-    r = client.get("/fhir/MedicationRequest?patient=patient-001", headers={"Authorization": TOKEN})
+    r = client.get(
+        "/fhir/MedicationRequest?patient=patient-001", headers={"Authorization": TOKEN}
+    )
     assert r.status_code == 200
     data = r.json()
     assert data["total"] == 5
@@ -81,13 +87,18 @@ def test_medication_requests_patient_001(client):
 
 
 def test_medication_statements_patient_001(client):
-    r = client.get("/fhir/MedicationStatement?patient=patient-001", headers={"Authorization": TOKEN})
+    r = client.get(
+        "/fhir/MedicationStatement?patient=patient-001",
+        headers={"Authorization": TOKEN},
+    )
     assert r.status_code == 200
     assert r.json()["total"] == 1
 
 
 def test_service_requests_patient_002(client):
-    r = client.get("/fhir/ServiceRequest?patient=patient-002", headers={"Authorization": TOKEN})
+    r = client.get(
+        "/fhir/ServiceRequest?patient=patient-002", headers={"Authorization": TOKEN}
+    )
     assert r.status_code == 200
     data = r.json()
     assert data["total"] == 2
@@ -97,13 +108,17 @@ def test_service_requests_patient_002(client):
 
 def test_appointments_patient_001_empty(client):
     """Patient-001 has no Appointments scheduled — this is the care gap."""
-    r = client.get("/fhir/Appointment?patient=patient-001", headers={"Authorization": TOKEN})
+    r = client.get(
+        "/fhir/Appointment?patient=patient-001", headers={"Authorization": TOKEN}
+    )
     assert r.status_code == 200
     assert r.json()["total"] == 0
 
 
 def test_procedures_patient_003(client):
-    r = client.get("/fhir/Procedure?patient=patient-003", headers={"Authorization": TOKEN})
+    r = client.get(
+        "/fhir/Procedure?patient=patient-003", headers={"Authorization": TOKEN}
+    )
     assert r.status_code == 200
     data = r.json()
     assert data["total"] == 3
@@ -112,7 +127,9 @@ def test_procedures_patient_003(client):
 
 
 def test_careplan_patient_002(client):
-    r = client.get("/fhir/CarePlan?patient=patient-002", headers={"Authorization": TOKEN})
+    r = client.get(
+        "/fhir/CarePlan?patient=patient-002", headers={"Authorization": TOKEN}
+    )
     assert r.status_code == 200
     assert r.json()["total"] == 1
 

@@ -5,8 +5,7 @@ LLM-dependent tests would require GEMINI_API_KEY + running agents; those
 are in scripts/test_e2e.py instead.  Everything here is deterministic and
 runs without network access.
 """
-import json
-import os
+
 import pytest
 from pathlib import Path
 from unittest.mock import MagicMock, patch
@@ -24,9 +23,11 @@ def load_test_bundles():
 
 # ── Agent app imports ─────────────────────────────────────────────────────────
 
+
 def test_all_apps_import():
     """All four agent app modules must import without errors."""
     import importlib
+
     for module in [
         "agents.medrecon.app",
         "agents.careplan.app",
@@ -39,11 +40,14 @@ def test_all_apps_import():
 
 # ── FHIR tool tests — patch fhir_get at tool-module level ────────────────────
 
+
 def _make_fhir_mock(patient_id: str):
     """Return a fhir_get replacement that answers from the live FHIR TestClient."""
     from fhir_server.main import app
 
-    def _mock_fhir_get(fhir_url: str, token: str, path: str, params: dict | None = None):
+    def _mock_fhir_get(
+        fhir_url: str, token: str, path: str, params: dict | None = None
+    ):
         with TestClient(app) as c:
             headers = {"Authorization": f"Bearer {token}"}
             r = c.get(f"/fhir/{path}", headers=headers, params=params or {})
@@ -55,7 +59,7 @@ def _make_fhir_mock(patient_id: str):
 def _make_ctx(patient_id: str) -> MagicMock:
     ctx = MagicMock()
     ctx.state = {
-        "fhir_url":   "http://mock-fhir/fhir",
+        "fhir_url": "http://mock-fhir/fhir",
         "fhir_token": "test-token",
         "patient_id": patient_id,
     }
@@ -64,8 +68,10 @@ def _make_ctx(patient_id: str) -> MagicMock:
 
 # MedRecon tools
 
+
 def test_medrecon_medication_requests_patient001():
     from agents.medrecon import tools as t
+
     ctx = _make_ctx("patient-001")
     with patch.object(t, "fhir_get", _make_fhir_mock("patient-001")):
         result = t.get_medication_requests(ctx)
@@ -79,6 +85,7 @@ def test_medrecon_medication_requests_patient001():
 
 def test_medrecon_medication_statements_patient001():
     from agents.medrecon import tools as t
+
     ctx = _make_ctx("patient-001")
     with patch.object(t, "fhir_get", _make_fhir_mock("patient-001")):
         result = t.get_medication_statements(ctx)
@@ -90,6 +97,7 @@ def test_medrecon_medication_statements_patient001():
 def test_medrecon_drug_interactions_patient001():
     """CHF patient should have ≥2 interactions and polypharmacy flag."""
     from agents.medrecon import tools as t
+
     ctx = _make_ctx("patient-001")
     # furosemide + lisinopril + carvedilol + metformin + aspirin
     codes = ["313988", "314077", "200033", "861007", "243670"]
@@ -102,6 +110,7 @@ def test_medrecon_drug_interactions_patient001():
 def test_medrecon_drug_interactions_patient002_major():
     """TKR patient: apixaban + ibuprofen (stopped) = MAJOR interaction."""
     from agents.medrecon import tools as t
+
     ctx = _make_ctx("patient-002")
     codes = ["1599543", "197805", "1049221", "198440", "312086"]
     result = t.check_drug_interactions(codes, ctx)
@@ -112,8 +121,10 @@ def test_medrecon_drug_interactions_patient002_major():
 
 # CarePlan tools
 
+
 def test_careplan_conditions_patient001():
     from agents.careplan import tools as t
+
     ctx = _make_ctx("patient-001")
     with patch.object(t, "fhir_get", _make_fhir_mock("patient-001")):
         result = t.get_conditions(ctx)
@@ -126,6 +137,7 @@ def test_careplan_conditions_patient001():
 
 def test_careplan_procedures_patient003():
     from agents.careplan import tools as t
+
     ctx = _make_ctx("patient-003")
     with patch.object(t, "fhir_get", _make_fhir_mock("patient-003")):
         result = t.get_procedures(ctx)
@@ -137,18 +149,24 @@ def test_careplan_procedures_patient003():
 
 def test_careplan_careplans_patient002():
     from agents.careplan import tools as t
+
     ctx = _make_ctx("patient-002")
     with patch.object(t, "fhir_get", _make_fhir_mock("patient-002")):
         result = t.get_care_plans(ctx)
     assert result["status"] == "success"
     assert result["count"] == 1
-    assert "TKR" in result["care_plans"][0]["title"] or "knee" in result["care_plans"][0]["title"].lower()
+    assert (
+        "TKR" in result["care_plans"][0]["title"]
+        or "knee" in result["care_plans"][0]["title"].lower()
+    )
 
 
 # FollowUp tools — critical: patient-001 has ZERO appointments (care gap)
 
+
 def test_followup_no_appointments_patient001():
     from agents.followup import tools as t
+
     ctx = _make_ctx("patient-001")
     with patch.object(t, "fhir_get", _make_fhir_mock("patient-001")):
         result = t.get_appointments(ctx)
@@ -158,6 +176,7 @@ def test_followup_no_appointments_patient001():
 
 def test_followup_service_requests_patient001():
     from agents.followup import tools as t
+
     ctx = _make_ctx("patient-001")
     with patch.object(t, "fhir_get", _make_fhir_mock("patient-001")):
         result = t.get_service_requests(ctx)
@@ -167,6 +186,7 @@ def test_followup_service_requests_patient001():
 
 def test_followup_conditions_include_windows_patient001():
     from agents.followup import tools as t
+
     ctx = _make_ctx("patient-001")
     with patch.object(t, "fhir_get", _make_fhir_mock("patient-001")):
         result = t.get_conditions(ctx)
@@ -179,6 +199,7 @@ def test_followup_conditions_include_windows_patient001():
 
 def test_followup_service_requests_patient002_pt():
     from agents.followup import tools as t
+
     ctx = _make_ctx("patient-002")
     with patch.object(t, "fhir_get", _make_fhir_mock("patient-002")):
         result = t.get_service_requests(ctx)
@@ -190,14 +211,17 @@ def test_followup_service_requests_patient002_pt():
 
 # A2A format
 
+
 def test_a2a_request_has_fhir_metadata():
     from shared.a2a_helpers import build_a2a_request
-    EXT = "https://app.promptopinion.ai/schemas/a2a/v1/fhir-context"
-    payload = build_a2a_request("discharge patient-001", "http://fhir", "tok", "patient-001")
+
+    payload = build_a2a_request(
+        "discharge patient-001", "http://fhir", "tok", "patient-001"
+    )
     assert payload["jsonrpc"] == "2.0"
     assert payload["method"] == "message/send"
     meta = payload["params"]["message"]["metadata"]
-    key  = next((k for k in meta if "fhir-context" in k), None)
+    key = next((k for k in meta if "fhir-context" in k), None)
     assert key is not None
     assert meta[key]["patientId"] == "patient-001"
     assert meta[key]["fhirToken"] == "tok"

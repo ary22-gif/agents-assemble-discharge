@@ -1,0 +1,56 @@
+{
+  "name": "discharge_coordinator",
+  "description": "Orchestrates a complete hospital discharge packet in <60 s by delegating to MedRecon, CarePlan, and FollowUp sub-agents via A2A. Reads patient data from FHIR R4. DEMO ONLY — SYNTHETIC DATA. NOT FOR CLINICAL USE.",
+  "url": "REPLACE_WITH_ORCHESTRATOR_URL",
+  "version": "1.0.0",
+  "defaultInputModes": ["text/plain"],
+  "defaultOutputModes": ["application/json", "text/plain"],
+  "supportedInterfaces": [
+    {
+      "url": "REPLACE_WITH_ORCHESTRATOR_URL",
+      "protocolBinding": "JSONRPC",
+      "protocolVersion": "1.0"
+    }
+  ],
+  "capabilities": {
+    "streaming": false,
+    "pushNotifications": false,
+    "stateTransitionHistory": false,
+    "extensions": [
+      {
+        "uri": "https://app.promptopinion.ai/schemas/a2a/v1/fhir-context",
+        "description": "FHIR context for secure patient data access",
+        "required": false,
+        "params": {
+          "scopes": [
+            {"name": "patient/Patient.rs",            "required": true},
+            {"name": "patient/MedicationRequest.rs",  "required": true},
+            {"name": "patient/MedicationStatement.rs","required": true},
+            {"name": "patient/Condition.rs",          "required": true},
+            {"name": "patient/CarePlan.rs",           "required": true},
+            {"name": "patient/Procedure.rs",          "required": true},
+            {"name": "patient/Appointment.rs",        "required": true},
+            {"name": "patient/ServiceRequest.rs",     "required": true}
+          ]
+        }
+      }
+    ]
+  },
+  "skills": [
+    {
+      "id": "discharge_planning",
+      "name": "Discharge Planning",
+      "description": "Generates a complete structured discharge packet: reconciled medication list, patient-readable care instructions, and follow-up coordination — all grounded in FHIR resources."
+    }
+  ],
+  "securitySchemes": {
+    "apiKey": {
+      "apiKeySecurityScheme": {
+        "name": "X-API-Key",
+        "location": "header",
+        "description": "API key required to access this agent."
+      }
+    }
+  },
+  "security": [{"apiKey": []}]
+}

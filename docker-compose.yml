@@ -1,0 +1,111 @@
+# Discharge Coordinator — Docker Compose (local dev / demo)
+#
+# Runs all five services from the same image.
+#
+# Prerequisites:
+#   1. Copy .env.example → .env and fill in GEMINI_API_KEY and AGENT_API_KEY.
+#   2. docker compose up --build    (first run)
+#      docker compose up            (subsequent runs)
+#      docker compose down          (stop)
+#
+# Service URLs (from your host):
+#   FHIR server  → http://localhost:8000
+#   Orchestrator → http://localhost:8001   (register this with Prompt Opinion)
+#   MedRecon     → http://localhost:8002
+#   CarePlan     → http://localhost:8003
+#   FollowUp     → http://localhost:8004
+#
+# DEMO ONLY — SYNTHETIC DATA. NOT FOR CLINICAL USE.
+
+x-agent-defaults: &agent-defaults
+  build: .
+  env_file: .env
+  restart: unless-stopped
+  depends_on:
+    fhir-server:
+      condition: service_healthy
+
+services:
+
+  fhir-server:
+    build: .
+    env_file: .env
+    restart: unless-stopped
+    environment:
+      AGENT_MODULE: fhir_server.main:app
+      PORT: "8000"
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+  medrecon:
+    <<: *agent-defaults
+    environment:
+      AGENT_MODULE: agents.medrecon.app:a2a_app
+      PORT: "8002"
+      FHIR_BASE_URL: http://fhir-server:8000/fhir
+    ports:
+      - "8002:8002"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8002/.well-known/agent-card.json')"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  careplan:
+    <<: *agent-defaults
+    environment:
+      AGENT_MODULE: agents.careplan.app:a2a_app
+      PORT: "8003"
+      FHIR_BASE_URL: http://fhir-server:8000/fhir
+    ports:
+      - "8003:8003"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8003/.well-known/agent-card.json')"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  followup:
+    <<: *agent-defaults
+    environment:
+      AGENT_MODULE: agents.followup.app:a2a_app
+      PORT: "8004"
+      FHIR_BASE_URL: http://fhir-server:8000/fhir
+    ports:
+      - "8004:8004"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8004/.well-known/agent-card.json')"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  orchestrator:
+    <<: *agent-defaults
+    environment:
+      AGENT_MODULE: agents.orchestrator.app:a2a_app
+      PORT: "8001"
+      # Sub-agent URLs via Docker internal DNS
+      MEDRECON_URL: http://medrecon:8002
+      CAREPLAN_URL: http://careplan:8003
+      FOLLOWUP_URL: http://followup:8004
+      FHIR_BASE_URL: http://fhir-server:8000/fhir
+    ports:
+      - "8001:8001"
+    depends_on:
+      fhir-server:
+        condition: service_healthy
+      medrecon:
+        condition: service_healthy
+      careplan:
+        condition: service_healthy
+      followup:
+        condition: service_healthy

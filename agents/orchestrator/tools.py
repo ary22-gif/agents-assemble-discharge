@@ -1,4 +1,5 @@
 """Orchestrator tools — parallel A2A fan-out to sub-agents."""
+
 import asyncio
 import json
 import logging
@@ -9,16 +10,22 @@ import httpx
 from google.adk.tools import ToolContext
 
 from shared.a2a_helpers import build_a2a_request
-from shared.fhir_client import _get_fhir_context, fhir_get, http_error_result, connection_error_result
+from shared.fhir_client import _get_fhir_context, fhir_get
 
 logger = logging.getLogger(__name__)
 
 AGENT_API_KEY = os.getenv("AGENT_API_KEY", "")
-BASE_URL      = os.getenv("A2A_BASE_URL", "http://localhost")
+BASE_URL = os.getenv("A2A_BASE_URL", "http://localhost")
 
-MEDRECON_URL  = os.getenv("MEDRECON_URL",  f"{BASE_URL}:{os.getenv('MEDRECON_PORT', '8002')}")
-CAREPLAN_URL  = os.getenv("CAREPLAN_URL",  f"{BASE_URL}:{os.getenv('CAREPLAN_PORT', '8003')}")
-FOLLOWUP_URL  = os.getenv("FOLLOWUP_URL",  f"{BASE_URL}:{os.getenv('FOLLOWUP_PORT', '8004')}")
+MEDRECON_URL = os.getenv(
+    "MEDRECON_URL", f"{BASE_URL}:{os.getenv('MEDRECON_PORT', '8002')}"
+)
+CAREPLAN_URL = os.getenv(
+    "CAREPLAN_URL", f"{BASE_URL}:{os.getenv('CAREPLAN_PORT', '8003')}"
+)
+FOLLOWUP_URL = os.getenv(
+    "FOLLOWUP_URL", f"{BASE_URL}:{os.getenv('FOLLOWUP_PORT', '8004')}"
+)
 
 
 def _extract_text_from_a2a_response(response: dict) -> str:
@@ -44,7 +51,7 @@ def _parse_json_response(text: str) -> dict:
     text = text.strip()
     if text.startswith("```"):
         lines = text.split("\n")
-        text  = "\n".join(lines[1:-1] if lines[-1].strip() == "```" else lines[1:])
+        text = "\n".join(lines[1:-1] if lines[-1].strip() == "```" else lines[1:])
     try:
         return json.loads(text)
     except json.JSONDecodeError:
@@ -72,32 +79,43 @@ async def _call_agent_async(
             resp.raise_for_status()
             data = resp.json()
         elapsed_ms = (time.perf_counter() - start) * 1000
-        text       = _extract_text_from_a2a_response(data)
-        parsed     = _parse_json_response(text)
-        logger.info("orchestrator_call agent=%s patient_id=%s duration_ms=%.1f status=%s",
-                    agent_name, patient_id, elapsed_ms, parsed.get("status", "?"))
+        text = _extract_text_from_a2a_response(data)
+        parsed = _parse_json_response(text)
+        logger.info(
+            "orchestrator_call agent=%s patient_id=%s duration_ms=%.1f status=%s",
+            agent_name,
+            patient_id,
+            elapsed_ms,
+            parsed.get("status", "?"),
+        )
         return parsed, elapsed_ms
     except httpx.TimeoutException:
         elapsed_ms = (time.perf_counter() - start) * 1000
         logger.error("orchestrator_timeout agent=%s", agent_name)
-        return {"status": "error", "error_message": f"{agent_name} timed out after {timeout}s"}, elapsed_ms
+        return {
+            "status": "error",
+            "error_message": f"{agent_name} timed out after {timeout}s",
+        }, elapsed_ms
     except Exception as e:
         elapsed_ms = (time.perf_counter() - start) * 1000
         logger.error("orchestrator_error agent=%s err=%s", agent_name, e)
         return {"status": "error", "error_message": str(e)}, elapsed_ms
 
 
-async def _prepare_packet_async(fhir_url: str, fhir_token: str, patient_id: str) -> dict:
+async def _prepare_packet_async(
+    fhir_url: str, fhir_token: str, patient_id: str
+) -> dict:
     """Fan out to all three sub-agents in parallel, synthesize discharge packet."""
     import datetime
 
     # Fetch patient name for the packet header
     patient_name = patient_id  # fallback
     try:
-        import httpx as _httpx
         p = fhir_get(fhir_url, fhir_token, f"Patient/{patient_id}")
-        names    = p.get("name", [])
-        official = next((n for n in names if n.get("use") == "official"), names[0] if names else {})
+        names = p.get("name", [])
+        official = next(
+            (n for n in names if n.get("use") == "official"), names[0] if names else {}
+        )
         patient_name = f"{' '.join(official.get('given', []))} {official.get('family', '')}".strip()
     except Exception:
         pass
@@ -109,9 +127,15 @@ async def _prepare_packet_async(fhir_url: str, fhir_token: str, patient_id: str)
     followup_prompt = f"Identify all follow-up appointments and referrals for patient {patient_id}. Use all available FHIR tools to check scheduled appointments and pending service requests."
 
     results = await asyncio.gather(
-        _call_agent_async(MEDRECON_URL,  "medrecon",  fhir_url, fhir_token, patient_id, medrecon_prompt),
-        _call_agent_async(CAREPLAN_URL,  "careplan",  fhir_url, fhir_token, patient_id, careplan_prompt),
-        _call_agent_async(FOLLOWUP_URL,  "followup",  fhir_url, fhir_token, patient_id, followup_prompt),
+        _call_agent_async(
+            MEDRECON_URL, "medrecon", fhir_url, fhir_token, patient_id, medrecon_prompt
+        ),
+        _call_agent_async(
+            CAREPLAN_URL, "careplan", fhir_url, fhir_token, patient_id, careplan_prompt
+        ),
+        _call_agent_async(
+            FOLLOWUP_URL, "followup", fhir_url, fhir_token, patient_id, followup_prompt
+        ),
         return_exceptions=True,
     )
 
@@ -122,28 +146,42 @@ async def _prepare_packet_async(fhir_url: str, fhir_token: str, patient_id: str)
             return {"status": "error", "error_message": str(r)}, 0.0
         return r
 
-    (med_data, med_ms), (care_data, care_ms), (fu_data, fu_ms) = [_unpack(r, n) for r, n in zip(results, ["medrecon","careplan","followup"])]
+    (med_data, med_ms), (care_data, care_ms), (fu_data, fu_ms) = [
+        _unpack(r, n) for r, n in zip(results, ["medrecon", "careplan", "followup"])
+    ]
 
     # Merge provenance from all agents
     combined_provenance = (
-        med_data.get("provenance", []) +
-        care_data.get("provenance", []) +
-        fu_data.get("provenance", [])
+        med_data.get("provenance", [])
+        + care_data.get("provenance", [])
+        + fu_data.get("provenance", [])
     )
 
     return {
-        "status":            "success",
-        "patient_id":        patient_id,
-        "patient_name":      patient_name,
-        "generated_at":      datetime.datetime.utcnow().isoformat() + "Z",
+        "status": "success",
+        "patient_id": patient_id,
+        "patient_name": patient_name,
+        "generated_at": datetime.datetime.utcnow().isoformat() + "Z",
         "total_duration_ms": round(total_ms, 1),
-        "medications":       med_data,
+        "medications": med_data,
         "care_instructions": care_data,
-        "follow_up":         fu_data,
+        "follow_up": fu_data,
         "agent_timings": [
-            {"agent": "medrecon", "duration_ms": round(med_ms,  1), "status": med_data.get("status",  "?")},
-            {"agent": "careplan", "duration_ms": round(care_ms, 1), "status": care_data.get("status", "?")},
-            {"agent": "followup", "duration_ms": round(fu_ms,   1), "status": fu_data.get("status",  "?")},
+            {
+                "agent": "medrecon",
+                "duration_ms": round(med_ms, 1),
+                "status": med_data.get("status", "?"),
+            },
+            {
+                "agent": "careplan",
+                "duration_ms": round(care_ms, 1),
+                "status": care_data.get("status", "?"),
+            },
+            {
+                "agent": "followup",
+                "duration_ms": round(fu_ms, 1),
+                "status": fu_data.get("status", "?"),
+            },
         ],
         "provenance": combined_provenance,
         "disclaimer": "DEMO ONLY — SYNTHETIC DATA. NOT FOR CLINICAL USE.",
@@ -167,8 +205,12 @@ def prepare_discharge_packet(tool_context: ToolContext) -> dict:
     fhir_url, fhir_token, patient_id = ctx
 
     logger.info("orchestrator prepare_discharge_packet patient_id=%s", patient_id)
-    logger.info("orchestrator sub-agents: medrecon=%s careplan=%s followup=%s",
-                MEDRECON_URL, CAREPLAN_URL, FOLLOWUP_URL)
+    logger.info(
+        "orchestrator sub-agents: medrecon=%s careplan=%s followup=%s",
+        MEDRECON_URL,
+        CAREPLAN_URL,
+        FOLLOWUP_URL,
+    )
 
     try:
         # Always run in a dedicated thread with its own event loop.
@@ -178,9 +220,7 @@ def prepare_discharge_packet(tool_context: ToolContext) -> dict:
         import concurrent.futures
 
         def _run():
-            return asyncio.run(
-                _prepare_packet_async(fhir_url, fhir_token, patient_id)
-            )
+            return asyncio.run(_prepare_packet_async(fhir_url, fhir_token, patient_id))
 
         with concurrent.futures.ThreadPoolExecutor(max_workers=1) as pool:
             future = pool.submit(_run)

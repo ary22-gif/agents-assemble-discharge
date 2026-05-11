@@ -1,0 +1,112 @@
+# render.yaml — Render.com deployment (fallback if Cloud Run is unavailable).
+#
+# Usage:
+#   1. Push this repo to GitHub.
+#   2. Go to dashboard.render.com → New Blueprint → point to this repo.
+#   3. Set the following environment variables in Render dashboard (Group: discharge-secrets):
+#        GEMINI_API_KEY   — your Gemini API key
+#        AGENT_API_KEY    — shared secret for inter-agent auth (generate a random string)
+#   4. After first deploy, note each service's public URL.
+#   5. Update MEDRECON_URL / CAREPLAN_URL / FOLLOWUP_URL on the orchestrator service
+#      to point to the actual Render URLs, then re-deploy.
+#
+# Note: Render free tier containers spin down after 15 min of inactivity.
+# Use the Starter plan ($7/month per service) for always-on.
+#
+# DEMO ONLY — SYNTHETIC DATA. NOT FOR CLINICAL USE.
+
+services:
+
+  - type: web
+    name: discharge-fhir
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: AGENT_MODULE
+        value: fhir_server.main:app
+      - key: LOG_LEVEL
+        value: INFO
+    healthCheckPath: /health
+
+  - type: web
+    name: discharge-medrecon
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: AGENT_MODULE
+        value: agents.medrecon.app:a2a_app
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: AGENT_API_KEY
+        sync: false
+      - key: ADK_SUPPRESS_GEMINI_LITELLM_WARNINGS
+        value: "true"
+      - key: LOG_LEVEL
+        value: INFO
+      - key: FHIR_BASE_URL
+        fromService:
+          name: discharge-fhir
+          type: web
+          property: host
+          envVarKey: FHIR_BASE_URL_COMPUTED
+    healthCheckPath: /.well-known/agent-card.json
+
+  - type: web
+    name: discharge-careplan
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: AGENT_MODULE
+        value: agents.careplan.app:a2a_app
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: AGENT_API_KEY
+        sync: false
+      - key: ADK_SUPPRESS_GEMINI_LITELLM_WARNINGS
+        value: "true"
+      - key: LOG_LEVEL
+        value: INFO
+    healthCheckPath: /.well-known/agent-card.json
+
+  - type: web
+    name: discharge-followup
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: AGENT_MODULE
+        value: agents.followup.app:a2a_app
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: AGENT_API_KEY
+        sync: false
+      - key: ADK_SUPPRESS_GEMINI_LITELLM_WARNINGS
+        value: "true"
+      - key: LOG_LEVEL
+        value: INFO
+    healthCheckPath: /.well-known/agent-card.json
+
+  - type: web
+    name: discharge-orchestrator
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: AGENT_MODULE
+        value: agents.orchestrator.app:a2a_app
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: AGENT_API_KEY
+        sync: false
+      - key: ADK_SUPPRESS_GEMINI_LITELLM_WARNINGS
+        value: "true"
+      - key: LOG_LEVEL
+        value: INFO
+      # Set these manually in the Render dashboard after the sub-agents are deployed:
+      - key: MEDRECON_URL
+        value: https://discharge-medrecon.onrender.com
+      - key: CAREPLAN_URL
+        value: https://discharge-careplan.onrender.com
+      - key: FOLLOWUP_URL
+        value: https://discharge-followup.onrender.com
+      - key: FHIR_BASE_URL
+        value: https://discharge-fhir.onrender.com/fhir
+    healthCheckPath: /.well-known/agent-card.json

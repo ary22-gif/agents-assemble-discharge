@@ -1,6 +1,6 @@
 """Pydantic output schemas shared across all agents."""
-from datetime import datetime
-from typing import Any, Optional
+
+from typing import Optional
 from pydantic import BaseModel, Field
 
 
@@ -11,6 +11,7 @@ class ProvenanceItem(BaseModel):
 
 
 # ── MedRecon ──────────────────────────────────────────────────────────────────
+
 
 class ReconciledMedication(BaseModel):
     resource_id: str
@@ -44,6 +45,7 @@ class MedReconOutput(BaseModel):
 
 # ── CarePlan ──────────────────────────────────────────────────────────────────
 
+
 class CarePlanOutput(BaseModel):
     status: str
     patient_id: str
@@ -59,6 +61,7 @@ class CarePlanOutput(BaseModel):
 
 
 # ── FollowUp ──────────────────────────────────────────────────────────────────
+
 
 class PendingReferral(BaseModel):
     resource_id: str
@@ -88,6 +91,7 @@ class FollowUpOutput(BaseModel):
 
 
 # ── Discharge Packet (Orchestrator output) ────────────────────────────────────
+
 
 class AgentTiming(BaseModel):
     agent: str

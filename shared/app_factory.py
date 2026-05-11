@@ -5,6 +5,7 @@ installed a2a-sdk:
   - AgentCardV1: adds supportedInterfaces, overrides securitySchemes to dict[str, Any]
   - AgentExtensionV1: adds params field for SMART scope declarations
 """
+
 import os
 from typing import Any
 
@@ -61,23 +62,23 @@ def create_a2a_app(
                 }
             }
         }
-        security = [{"apiKey": []}]
+        security: list[dict] | None = [{"apiKey": []}]
     else:
         security_schemes = None
         security = None
 
-    agent_card = AgentCardV1(
+    agent_card = AgentCardV1(  # type: ignore[call-arg]
         name=name,
         description=description,
         url=url,
         version=version,
         defaultInputModes=["text/plain"],
         defaultOutputModes=["application/json", "text/plain"],
-        capabilities=AgentCapabilities(
+        capabilities=AgentCapabilities(  # type: ignore[call-arg]
             streaming=False,
             pushNotifications=False,
             stateTransitionHistory=False,
-            extensions=extensions,
+            extensions=extensions,  # type: ignore[arg-type]
         ),
         supportedInterfaces=[
             {"url": url, "protocolBinding": "JSONRPC", "protocolVersion": "1.0"},

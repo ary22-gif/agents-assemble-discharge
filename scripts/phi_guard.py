@@ -7,6 +7,7 @@ targets structured identifiers, not freeform text.
 
 Excluded: reference/ and .venv/ (handled by pre-commit exclude config).
 """
+
 import re
 import sys
 
@@ -24,6 +25,7 @@ PATTERNS = [
 
 COMPILED = [(re.compile(p, re.IGNORECASE), label) for p, label in PATTERNS]
 
+
 def check_file(path: str) -> list[str]:
     violations = []
     try:
@@ -35,6 +37,7 @@ def check_file(path: str) -> list[str]:
     except (OSError, UnicodeDecodeError):
         pass
     return violations
+
 
 def main():
     files = sys.argv[1:]
@@ -48,6 +51,7 @@ def main():
         for v in all_violations:
             print(v)
         sys.exit(1)
+
 
 if __name__ == "__main__":
     main()

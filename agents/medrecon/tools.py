@@ -1,6 +1,6 @@
 """MedRecon Agent tools — medication FHIR queries + drug interaction check."""
+
 import logging
-import time
 
 import httpx
 from google.adk.tools import ToolContext
@@ -96,6 +96,7 @@ def _check_interactions(rxnorm_codes: list[str]) -> list[dict]:
 
 # ── FHIR tools ────────────────────────────────────────────────────────────────
 
+
 def get_patient_info(tool_context: ToolContext) -> dict:
     """Fetch basic patient demographics (name, DOB, gender) from FHIR."""
     ctx = _get_fhir_context(tool_context)
@@ -109,8 +110,10 @@ def get_patient_info(tool_context: ToolContext) -> dict:
         return http_error_result(e)
     except Exception as e:
         return connection_error_result(e)
-    names    = p.get("name", [])
-    official = next((n for n in names if n.get("use") == "official"), names[0] if names else {})
+    names = p.get("name", [])
+    official = next(
+        (n for n in names if n.get("use") == "official"), names[0] if names else {}
+    )
     return {
         "status": "success",
         "resource_id": extract_resource_id(p),
@@ -134,8 +137,12 @@ def get_medication_requests(tool_context: ToolContext) -> dict:
     fhir_url, fhir_token, patient_id = ctx
     logger.info("medrecon_tool get_medication_requests patient_id=%s", patient_id)
     try:
-        bundle = fhir_get(fhir_url, fhir_token, "MedicationRequest",
-                          params={"patient": patient_id, "_count": "100"})
+        bundle = fhir_get(
+            fhir_url,
+            fhir_token,
+            "MedicationRequest",
+            params={"patient": patient_id, "_count": "100"},
+        )
     except httpx.HTTPStatusError as e:
         return http_error_result(e)
     except Exception as e:
@@ -143,24 +150,32 @@ def get_medication_requests(tool_context: ToolContext) -> dict:
 
     meds = []
     for entry in bundle.get("entry", []):
-        r       = entry.get("resource", {})
+        r = entry.get("resource", {})
         concept = r.get("medicationCodeableConcept", {})
         codings = concept.get("coding", [])
-        rxnorm  = next((c["code"] for c in codings
-                        if "rxnorm" in c.get("system", "").lower()), None)
-        dosage  = r.get("dosageInstruction", [{}])
-        meds.append({
-            "resource_id": extract_resource_id(r),
-            "medication_name": concept.get("text") or coding_display(codings),
-            "rxnorm_code": rxnorm,
-            "status": r.get("status"),
-            "dosage": dosage[0].get("text", "See label") if dosage else "See label",
-            "authored_on": r.get("authoredOn"),
-            "requester": (r.get("requester") or {}).get("display"),
-            "notes": " | ".join(n.get("text", "") for n in r.get("note", [])),
-        })
-    return {"status": "success", "patient_id": patient_id,
-            "count": len(meds), "medications": meds}
+        rxnorm = next(
+            (c["code"] for c in codings if "rxnorm" in c.get("system", "").lower()),
+            None,
+        )
+        dosage = r.get("dosageInstruction", [{}])
+        meds.append(
+            {
+                "resource_id": extract_resource_id(r),
+                "medication_name": concept.get("text") or coding_display(codings),
+                "rxnorm_code": rxnorm,
+                "status": r.get("status"),
+                "dosage": dosage[0].get("text", "See label") if dosage else "See label",
+                "authored_on": r.get("authoredOn"),
+                "requester": (r.get("requester") or {}).get("display"),
+                "notes": " | ".join(n.get("text", "") for n in r.get("note", [])),
+            }
+        )
+    return {
+        "status": "success",
+        "patient_id": patient_id,
+        "count": len(meds),
+        "medications": meds,
+    }
 
 
 def get_medication_statements(tool_context: ToolContext) -> dict:
@@ -176,8 +191,12 @@ def get_medication_statements(tool_context: ToolContext) -> dict:
     fhir_url, fhir_token, patient_id = ctx
     logger.info("medrecon_tool get_medication_statements patient_id=%s", patient_id)
     try:
-        bundle = fhir_get(fhir_url, fhir_token, "MedicationStatement",
-                          params={"patient": patient_id, "_count": "100"})
+        bundle = fhir_get(
+            fhir_url,
+            fhir_token,
+            "MedicationStatement",
+            params={"patient": patient_id, "_count": "100"},
+        )
     except httpx.HTTPStatusError as e:
         return http_error_result(e)
     except Exception as e:
@@ -185,21 +204,29 @@ def get_medication_statements(tool_context: ToolContext) -> dict:
 
     stmts = []
     for entry in bundle.get("entry", []):
-        r       = entry.get("resource", {})
+        r = entry.get("resource", {})
         concept = r.get("medicationCodeableConcept", {})
         codings = concept.get("coding", [])
-        rxnorm  = next((c["code"] for c in codings
-                        if "rxnorm" in c.get("system", "").lower()), None)
-        stmts.append({
-            "resource_id": extract_resource_id(r),
-            "medication_name": concept.get("text") or coding_display(codings),
-            "rxnorm_code": rxnorm,
-            "status": r.get("status"),
-            "date_asserted": r.get("dateAsserted"),
-            "notes": " | ".join(n.get("text", "") for n in r.get("note", [])),
-        })
-    return {"status": "success", "patient_id": patient_id,
-            "count": len(stmts), "statements": stmts}
+        rxnorm = next(
+            (c["code"] for c in codings if "rxnorm" in c.get("system", "").lower()),
+            None,
+        )
+        stmts.append(
+            {
+                "resource_id": extract_resource_id(r),
+                "medication_name": concept.get("text") or coding_display(codings),
+                "rxnorm_code": rxnorm,
+                "status": r.get("status"),
+                "date_asserted": r.get("dateAsserted"),
+                "notes": " | ".join(n.get("text", "") for n in r.get("note", [])),
+            }
+        )
+    return {
+        "status": "success",
+        "patient_id": patient_id,
+        "count": len(stmts),
+        "statements": stmts,
+    }
 
 
 def check_drug_interactions(rxnorm_codes: list[str], tool_context: ToolContext) -> dict:

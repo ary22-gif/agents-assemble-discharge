@@ -5,6 +5,7 @@ Three checks:
   2. Provenance: every clinical claim must cite a FHIR resource ID from input.
   3. Reading level: CarePlan instructions must score ≤ 8th grade Flesch-Kincaid (target 6th).
 """
+
 import re
 import json
 import logging
@@ -14,8 +15,8 @@ logger = logging.getLogger(__name__)
 
 _PHI_PATTERNS = [
     re.compile(r"\b\d{3}-\d{2}-\d{4}\b"),
-    re.compile(r"\bMRN[-:\s]+\d{5,10}\b",  re.I),
-    re.compile(r"\bNPI[-:\s]+\d{10}\b",    re.I),
+    re.compile(r"\bMRN[-:\s]+\d{5,10}\b", re.I),
+    re.compile(r"\bNPI[-:\s]+\d{10}\b", re.I),
 ]
 
 
@@ -26,16 +27,15 @@ class GuardrailResult:
 
 
 def check_phi(text: str) -> GuardrailResult:
-    violations = [
-        f"PHI pattern [{p.pattern}]"
-        for p in _PHI_PATTERNS if p.search(text)
-    ]
+    violations = [f"PHI pattern [{p.pattern}]" for p in _PHI_PATTERNS if p.search(text)]
     if violations:
         logger.warning("guardrail_phi_fail count=%d", len(violations))
     return GuardrailResult(passed=not violations, violations=violations)
 
 
-def check_provenance(claims: list[dict], known_resource_ids: set[str]) -> GuardrailResult:
+def check_provenance(
+    claims: list[dict], known_resource_ids: set[str]
+) -> GuardrailResult:
     violations = []
     for claim in claims:
         rid = claim.get("resource_id")
@@ -51,6 +51,7 @@ def check_provenance(claims: list[dict], known_resource_ids: set[str]) -> Guardr
 def check_reading_level(text: str, max_grade: float = 8.0) -> GuardrailResult:
     try:
         import textstat
+
         grade = textstat.flesch_kincaid_grade(text)
         logger.info("guardrail_reading_level grade=%.1f max=%.1f", grade, max_grade)
         if grade > max_grade:
@@ -67,21 +68,24 @@ def check_reading_level(text: str, max_grade: float = 8.0) -> GuardrailResult:
 def score_reading_level(text: str) -> float | None:
     try:
         import textstat
+
         return round(textstat.flesch_kincaid_grade(text), 1)
     except Exception:
         return None
 
 
-def run_all_guardrails(output_text: str, known_resource_ids: set[str] | None = None) -> dict:
+def run_all_guardrails(
+    output_text: str, known_resource_ids: set[str] | None = None
+) -> dict:
     """Run all guardrails and return a summary dict."""
     phi_result = check_phi(output_text)
-    results    = {"phi": phi_result.passed, "phi_violations": phi_result.violations}
+    results = {"phi": phi_result.passed, "phi_violations": phi_result.violations}
 
     if known_resource_ids is not None:
         try:
-            data   = json.loads(output_text)
+            data = json.loads(output_text)
             claims = data.get("provenance", [])
-            prov   = check_provenance(claims, known_resource_ids)
+            prov = check_provenance(claims, known_resource_ids)
             results["provenance"] = prov.passed
             results["provenance_violations"] = prov.violations
         except Exception:

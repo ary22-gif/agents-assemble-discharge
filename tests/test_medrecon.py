@@ -1,6 +1,6 @@
 """Unit tests for MedRecon tools — no LLM, tests FHIR retrieval + interaction check."""
-import pytest
-from unittest.mock import patch, MagicMock
+
+from unittest.mock import MagicMock
 
 from agents.medrecon.tools import check_drug_interactions, _check_interactions
 
@@ -60,7 +60,7 @@ def test_polypharmacy_flag():
         "fhir_token": "demo-token",
         "patient_id": "patient-001",
     }
-    result = check_drug_interactions(["a","b","c","d","e"], mock_ctx)
+    result = check_drug_interactions(["a", "b", "c", "d", "e"], mock_ctx)
     assert result["polypharmacy_flag"] is True
 
 
@@ -71,5 +71,5 @@ def test_no_polypharmacy():
         "fhir_token": "demo-token",
         "patient_id": "patient-001",
     }
-    result = check_drug_interactions(["a","b","c"], mock_ctx)
+    result = check_drug_interactions(["a", "b", "c"], mock_ctx)
     assert result["polypharmacy_flag"] is False

@@ -1,6 +1,6 @@
 """Unit tests for CarePlan guardrails."""
-import pytest
-from shared.guardrails import check_phi, check_reading_level, score_reading_level, check_provenance
+
+from shared.guardrails import check_phi, score_reading_level, check_provenance
 
 
 def test_phi_clean():
@@ -35,7 +35,11 @@ def test_reading_level_complex():
 
 def test_provenance_valid():
     claims = [
-        {"resource_type": "Condition", "resource_id": "Condition/cond-001-chf", "agent": "careplan"}
+        {
+            "resource_type": "Condition",
+            "resource_id": "Condition/cond-001-chf",
+            "agent": "careplan",
+        }
     ]
     known = {"Condition/cond-001-chf", "CarePlan/cp-001-chf"}
     r = check_provenance(claims, known)
@@ -49,6 +53,12 @@ def test_provenance_missing_id():
 
 
 def test_provenance_unknown_id():
-    claims = [{"resource_type": "Condition", "resource_id": "Condition/invented-id", "agent": "careplan"}]
+    claims = [
+        {
+            "resource_type": "Condition",
+            "resource_id": "Condition/invented-id",
+            "agent": "careplan",
+        }
+    ]
     r = check_provenance(claims, {"Condition/cond-001-chf"})
     assert not r.passed

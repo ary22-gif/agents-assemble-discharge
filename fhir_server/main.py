@@ -6,6 +6,7 @@ DEMO ONLY — SYNTHETIC DATA. NOT FOR CLINICAL USE.
 Loads patient bundles from ../synthetic_data/ at startup.
 Accepts any non-empty Bearer token (mock auth).
 """
+
 import logging
 from contextlib import asynccontextmanager
 from pathlib import Path
@@ -48,7 +49,15 @@ def root():
     return {
         "service": "Mock FHIR R4 Server",
         "disclaimer": "DEMO ONLY — SYNTHETIC DATA. NOT FOR CLINICAL USE.",
-        "endpoints": ["/fhir/Patient/{id}", "/fhir/Condition", "/fhir/MedicationRequest",
-                      "/fhir/MedicationStatement", "/fhir/CarePlan", "/fhir/Procedure",
-                      "/fhir/Appointment", "/fhir/ServiceRequest", "/health"],
+        "endpoints": [
+            "/fhir/Patient/{id}",
+            "/fhir/Condition",
+            "/fhir/MedicationRequest",
+            "/fhir/MedicationStatement",
+            "/fhir/CarePlan",
+            "/fhir/Procedure",
+            "/fhir/Appointment",
+            "/fhir/ServiceRequest",
+            "/health",
+        ],
     }

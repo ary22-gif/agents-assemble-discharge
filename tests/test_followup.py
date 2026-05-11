@@ -1,5 +1,5 @@
 """Unit tests for FollowUp condition-window mapping."""
-import pytest
+
 from agents.followup.tools import _CONDITION_WINDOWS
 
 
